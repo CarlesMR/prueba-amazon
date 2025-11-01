@@ -1,0 +1,13 @@
+# Symfony
+/.env
+/.env.local
+/.env.*.local
+/var/
+/vendor/
+
+# Mongo/Misc
+/.mongodb/
+*.log
+
+# Ignore node modules if using frontend
+/node_modules/

@@ -3,7 +3,7 @@ services:
     build: ./docker/php
     volumes:
       - ./src:/var/www/html
-    container_name: symfony-php
+    container_name: prueba-amazon
 
   nginx:
     image: nginx:alpine
