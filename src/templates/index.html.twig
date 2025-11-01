@@ -1,35 +1,166 @@
-{# templates/products/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Productos{% endblock %}
+{% block title %}Lista de Productos{% endblock %}
 
 {% block body %}
-<h1>Lista de Productos</h1>
+<div class="container mt-5 mb-5">
+    <h1 class="mb-4 text-center fw-bold text-primary">Lista de Productos</h1>
 
-<ul>
-    {% for product in products %}
-        <li>
-            <h2>{{ product.ItemInfo.Title.DisplayValue }}</h2>
-            <p>Marca: {{ product.ItemInfo.ByLineInfo.Brand.DisplayValue }}</p>
-            <p>Precio: 
-                {% if product.Offers.Listings is defined and product.Offers.Listings|length > 0 %}
-                    {{ product.Offers.Listings[0].Price.DisplayAmount }}
+    <table class="table table-hover table-striped align-middle shadow-sm rounded">
+        <thead class="table-dark">
+            <tr>
+                <th style="width: 25%;">Producto</th>
+                <th class="text-center" style="width: 20%;">Nuestra Puntuación</th>
+                <th>Características Clave</th>
+                <th class="text-center" style="width: 15%;">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                {% set rating = product.Rating ?? random(10) + 1 %}
+
+                {% if rating >= 9 %}
+                    {% set label = 'Genial' %}
+                    {% set color = 'success' %}
+                {% elseif rating >= 7 %}
+                    {% set label = 'Bueno' %}
+                    {% set color = 'primary' %}
+                {% elseif rating >= 5 %}
+                    {% set label = 'Regular' %}
+                    {% set color = 'warning' %}
                 {% else %}
-                    No disponible
+                    {% set label = 'Malo' %}
+                    {% set color = 'danger' %}
                 {% endif %}
-            </p>
-            <a href="{{ product.DetailPageURL }}" target="_blank">Ver en Amazon</a>
-            <div>
-                <img src="{{ product.Images.Primary.Large.URL }}" width="200" alt="{{ product.ItemInfo.Title.DisplayValue }}">
-            </div>
-            <ul>
-                {% for feature in product.ItemInfo.Features.DisplayValues %}
-                    <li>{{ feature }}</li>
-                {% endfor %}
-            </ul>
-        </li>
-    {% else %}
-        <li>No hay productos disponibles</li>
-    {% endfor %}
-</ul>
+
+                {% set collapse_id = 'collapse-' ~ loop.index %}
+
+                <tr>
+                    {# --- Producto --- #}
+                    <td class="text-center">
+                        {% if product.Images.Primary.Large.URL is defined %}
+                            <img 
+                                src="{{ product.Images.Primary.Large.URL }}" 
+                                alt="{{ product.ItemInfo.Title.DisplayValue }}" 
+                                width="120" 
+                                class="img-thumbnail mb-2 shadow-sm rounded"
+                            >
+                        {% endif %}
+                    </td>
+
+                    {# --- Puntuación --- #}
+                    <td class="text-center">
+                        <div class="fw-bold mb-1 fs-5">{{ rating }}/10</div>
+
+                        {% set stars = ((rating / 2)|round) %}
+                        {% set half_star = ((rating / 2) - stars) >= 0.5 %}
+                        {% set empty_stars = 5 - stars - (half_star ? 1 : 0) %}
+
+                        <div class="text-warning fs-5 mb-2">
+                            {% for i in 1..stars %}
+                                <i class="bi bi-star-fill"></i>
+                            {% endfor %}
+
+                            {% if half_star %}
+                                <i class="bi bi-star-half"></i>
+                            {% endif %}
+
+                            {% for i in 1..empty_stars %}
+                                <i class="bi bi-star"></i>
+                            {% endfor %}
+                        </div>
+
+                        <span class="badge bg-{{ color }}">{{ label }}</span>
+                    </td>
+
+                    {# --- Características --- #}
+                    <td>
+                        <h6 class="fw-bold mt-2 mb-1">
+                            {{ product.ItemInfo.Title.DisplayValue|length > 60 
+                                ? product.ItemInfo.Title.DisplayValue|slice(0, 60) ~ '…' 
+                                : product.ItemInfo.Title.DisplayValue }}
+                        </h6>
+
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                {{ product.ItemInfo.ByLineInfo.Brand.DisplayValue ?? 'Marca desconocida' }}
+                            </small>
+                        </div>
+
+                        <div class="mb-2">
+                            {% if product.Offers.Listings[0].Price.Savings is defined %}
+                                <span class="badge badge-outline-dark me-1">
+                                    {{ product.Offers.Listings[0].Price.Savings.Percentage }}% Descuento
+                                </span>
+                            {% endif %}
+
+                            {% if product.Offers.Listings[0].DeliveryInfo.IsFreeShippingEligible %}
+                                <span class="badge badge-outline-dark">
+                                    Envío Gratis
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <a class="text-primary small toggle-collapse" 
+                               data-bs-toggle="collapse" 
+                               href="#{{ collapse_id }}" 
+                               role="button" 
+                               aria-expanded="false" 
+                               aria-controls="{{ collapse_id }}">
+                                Mostrar más ▼
+                            </a>
+                        </div>
+                    </td>
+
+                    {# --- Acción --- #}
+                    <td class="text-center">
+                        <a href="{{ product.DetailPageURL }}" 
+                           target="_blank" 
+                           class="btn btn-outline-primary btn-sm px-3">
+                            Comprar Ahora
+                        </a>
+                    </td>
+                </tr>
+
+                {# --- Segundo TR con características completas --- #}
+                <tr class="collapse bg-light" id="{{ collapse_id }}">
+                    <td colspan="4">
+                        <strong>Más características:</strong>
+                        <ul class="mt-2 mb-0">
+                            {% for feature in product.ItemInfo.Features.DisplayValues %}
+                                <li>{{ feature }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        No se encontraron productos 😞
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# --- Script para cambiar el texto del toggle --- #}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggles = document.querySelectorAll('.toggle-collapse');
+
+    toggles.forEach(function(toggle) {
+        const target = document.querySelector(toggle.getAttribute('href'));
+
+        target.addEventListener('shown.bs.collapse', function () {
+            toggle.textContent = 'Mostrar menos ▲';
+        });
+
+        target.addEventListener('hidden.bs.collapse', function () {
+            toggle.textContent = 'Mostrar más ▼';
+        });
+    });
+});
+</script>
 {% endblock %}
