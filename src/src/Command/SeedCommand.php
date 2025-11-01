@@ -46,6 +46,7 @@ class SeedCommand extends Command
         $user->setEmail($email);
         $hashedPassword = $this->hasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
+        $user->setRoles(['ROLE_ADMIN']);
 
         $this->dm->persist($user);
         $this->dm->flush();

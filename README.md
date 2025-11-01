@@ -28,17 +28,17 @@ Servicios levantados:
 3. Accede al contenedor de Symfony para ejecutar comandos:
 
 ```bash
-docker compose exec app bash
+docker exec -it prueba-amazon bash
 ```
 
 ---
 
-## Configuración de variables de entorno
+## Configuración de entorno
 
 Copia el archivo de ejemplo `.env.example` a `.env`:
 
 ```bash
-cp .env.example .env
+cp .env.dev .env
 ```
 
 Asegúrate de configurar los parámetros según tu entorno, especialmente la conexión a MongoDB:
@@ -47,12 +47,23 @@ Asegúrate de configurar los parámetros según tu entorno, especialmente la con
 MONGODB_URL="mongodb://root:rootpass@mongo:27017/appdb?authSource=admin"
 MONGODB_DB="appdb"
 APP_ENV=dev
-APP_SECRET=some_secret_key
 ```
-Para generar el `APP_SECRET` utiliza el siguiente comando:
+
+4. Instalación de composer:
+
 ```bash
-php bin/console doctrine:mongodb:schema:create
+composer install
 ```
+
+5. Generar APP_SECRET:
+
+Primero generamos un string aleatorio:
+
+```bash
+openssl rand -hex 32
+```
+
+Copiamos el valor devuelto en .env en la clave `APP_SECRET`.
 
 ---
 
