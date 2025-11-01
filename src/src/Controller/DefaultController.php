@@ -11,6 +11,8 @@ class DefaultController extends AbstractController
     #[Route('/', name: 'home')]
     public function index(): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $filePath = __DIR__ . '/../../data/amazon.json';
 
         if (!file_exists($filePath)) {
@@ -53,7 +55,7 @@ class DefaultController extends AbstractController
         };
 
         return [
-            'Rating' => round($rating, 1),  // puntuación 1-10
+            'Rating' => number_format(round($rating, 1), 1, ','),  // puntuación 1-10
             'Stars' => (int) $fullStars, // estrellas completas
             'HalfStar' => $halfStar, // media estrella
             'EmptyStars' => (int) $emptyStars, // estrellas vacías

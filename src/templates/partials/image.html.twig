@@ -1,0 +1,7 @@
+<td class="text-center">
+    {% if product.Images.Primary.Large.URL is defined %}
+        <img src="{{ product.Images.Primary.Large.URL }}" 
+             alt="{{ product.ItemInfo.Title.DisplayValue }}" 
+             width="120" class="img-thumbnail mb-2 shadow-sm rounded">
+    {% endif %}
+</td>

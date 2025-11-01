@@ -2,14 +2,10 @@
 
 namespace App\Controller;
 
-use App\Document\User;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class SecurityController extends AbstractController
 {
@@ -21,13 +17,13 @@ class SecurityController extends AbstractController
 
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
-            'error' => $error,
+            'error' => $error
         ]);
     }
 
     #[Route('/logout', name: 'logout')]
     public function logout(): void
     {
-        // Symfony maneja esto automáticamente
+        throw new \LogicException('Este método puede estar vacío.');
     }
 }

@@ -1,0 +1,17 @@
+<tr>
+    {% include 'partials/image.html.twig' %}
+    {% include 'partials/rating.html.twig' %}
+    {% include 'partials/features.html.twig' %}
+    {% include 'partials/action.html.twig' %}
+</tr>
+
+<tr class="collapse bg-light" id="{{ collapse_id }}">
+    <td colspan="4">
+        <strong>Más características:</strong>
+        <ul class="mt-2 mb-0">
+            {% for feature in product.ItemInfo.Features.DisplayValues %}
+                <li>{{ feature }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>

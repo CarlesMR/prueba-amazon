@@ -1,0 +1,17 @@
+<td class="text-center">
+<div class="fw-bold mb-1 fs-5">{{ product.Reviews.Rating }}</div>
+    <div class="text-warning fs-5 mb-2">
+        {% for i in 1..product.Reviews.Stars %}
+            <i class="bi bi-star-fill"></i>
+        {% endfor %}
+        {% if product.Reviews.HalfStar %}
+            <i class="bi bi-star-half"></i>
+        {% endif %}
+        {% if product.Reviews.EmptyStars > 0 %}
+            {% for i in 1..product.Reviews.EmptyStars %}
+                <i class="bi bi-star"></i>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <span class="badge bg-{{ product.Reviews.Color }}">{{ product.Reviews.Label }}</span>
+</td>

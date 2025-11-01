@@ -1,0 +1,30 @@
+<td>
+    <h6 class="fw-bold mt-2 mb-1">
+        {{ product.ItemInfo.Title.DisplayValue|length > 60 
+            ? product.ItemInfo.Title.DisplayValue|slice(0, 60) ~ '…' 
+            : product.ItemInfo.Title.DisplayValue }}
+    </h6>
+    <div class="mb-2">
+        <small class="text-muted">{{ product.ItemInfo.ByLineInfo.Brand.DisplayValue ?? 'Marca desconocida' }}</small>
+    </div>
+    <div class="mb-2">
+        {% if product.Offers.Listings[0].Price.Savings is defined %}
+            <span class="badge badge-outline-dark me-1">
+                {{ product.Offers.Listings[0].Price.Savings.Percentage }}% Descuento
+            </span>
+        {% endif %}
+        {% if product.Offers.Listings[0].DeliveryInfo.IsFreeShippingEligible %}
+            <span class="badge badge-outline-dark">Envío Gratis</span>
+        {% endif %}
+    </div>
+    <div>
+        <a class="text-primary small toggle-collapse" 
+           data-bs-toggle="collapse" 
+           href="#{{ collapse_id }}" 
+           role="button" 
+           aria-expanded="false" 
+           aria-controls="{{ collapse_id }}">
+            Mostrar más ▼
+        </a>
+    </div>
+</td>

@@ -2,6 +2,18 @@
 
 {% block title %}Lista de Productos{% endblock %}
 
+{% block stylesheets %}
+<style>
+    .badge-outline-dark {
+        color: #343a40;
+        background-color: transparent;
+        background-image: none;
+        border-color: #343a40;
+        border: 1px solid;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="container mt-5 mb-5">
     <h1 class="mb-4 text-center fw-bold text-primary">Lista de Productos</h1>
@@ -17,102 +29,8 @@
         </thead>
         <tbody>
             {% for product in products %}
-                {# ID único para collapse #}
                 {% set collapse_id = 'collapse-' ~ loop.index %}
-
-                <tr>
-                    <td class="text-center">
-                        {% if product.Images.Primary.Large.URL is defined %}
-                            <img src="{{ product.Images.Primary.Large.URL }}" 
-                                 alt="{{ product.ItemInfo.Title.DisplayValue }}" 
-                                 width="120" class="img-thumbnail mb-2 shadow-sm rounded">
-                        {% endif %}
-                    </td>
-
-                    {# --- Puntuación --- #}
-                    <td class="text-center">
-                        <div class="fw-bold mb-1 fs-5">
-                            {{ product.Reviews.Rating|number_format(1, '.', '') }}/5
-                        </div>
-
-                        <div class="text-warning fs-5 mb-2">
-                            {% for i in 1..product.Reviews.Stars %}
-                                <i class="bi bi-star-fill"></i>
-                            {% endfor %}
-
-                            {% if product.Reviews.HalfStar %}
-                                <i class="bi bi-star-half"></i>
-                            {% endif %}
-
-                            {% if product.Reviews.EmptyStars > 0 %}
-                                {% for i in 1..product.Reviews.EmptyStars %}
-                                    <i class="bi bi-star"></i>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                        <span class="badge bg-{{ product.Reviews.Color }}">
-                            {{ product.Reviews.Label }}
-                        </span>
-                    </td>
-
-                    {# --- Características --- #}
-                    <td>
-                        <h6 class="fw-bold mt-2 mb-1">
-                            {{ product.ItemInfo.Title.DisplayValue|length > 60 
-                                ? product.ItemInfo.Title.DisplayValue|slice(0, 60) ~ '…' 
-                                : product.ItemInfo.Title.DisplayValue }}
-                        </h6>
-                        <div class="mb-2">
-                            <small class="text-muted">
-                                {{ product.ItemInfo.ByLineInfo.Brand.DisplayValue ?? 'Marca desconocida' }}
-                            </small>
-                        </div>
-                        <div class="mb-2">
-                            {% if product.Offers.Listings[0].Price.Savings is defined %}
-                                <span class="badge badge-outline-dark me-1">
-                                    {{ product.Offers.Listings[0].Price.Savings.Percentage }}% Descuento
-                                </span>
-                            {% endif %}
-
-                            {% if product.Offers.Listings[0].DeliveryInfo.IsFreeShippingEligible %}
-                                <span class="badge badge-outline-dark">
-                                    Envío Gratis
-                                </span>
-                            {% endif %}
-                        </div>
-
-                        <div>
-                            <a class="text-primary small toggle-collapse" 
-                               data-bs-toggle="collapse" 
-                               href="#{{ collapse_id }}" 
-                               role="button" 
-                               aria-expanded="false" 
-                               aria-controls="{{ collapse_id }}">
-                                Mostrar más ▼
-                            </a>
-                        </div>
-                    </td>
-
-                    {# --- Acción --- #}
-                    <td class="text-center">
-                        <a href="{{ product.DetailPageURL }}" 
-                           target="_blank" 
-                           class="btn btn-outline-primary btn-sm px-3">
-                            Comprar Ahora
-                        </a>
-                    </td>
-                </tr>
-
-                <tr class="collapse bg-light" id="{{ collapse_id }}">
-                    <td colspan="4">
-                        <strong>Más características:</strong>
-                        <ul class="mt-2 mb-0">
-                            {% for feature in product.ItemInfo.Features.DisplayValues %}
-                                <li>{{ feature }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                </tr>
+                {% include 'partials/row.html.twig' %}
             {% else %}
                 <tr>
                     <td colspan="4" class="text-center text-muted py-4">
@@ -123,22 +41,24 @@
         </tbody>
     </table>
 </div>
+{% endblock %}
 
+{% block javascripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const toggles = document.querySelectorAll('.toggle-collapse');
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggles = document.querySelectorAll('.toggle-collapse');
 
-    toggles.forEach(function(toggle) {
-        const target = document.querySelector(toggle.getAttribute('href'));
+        toggles.forEach(function(toggle) {
+            const target = document.querySelector(toggle.getAttribute('href'));
 
-        target.addEventListener('shown.bs.collapse', function () {
-            toggle.textContent = 'Mostrar menos ▲';
-        });
+            target.addEventListener('shown.bs.collapse', function () {
+                toggle.textContent = 'Mostrar menos ▲';
+            });
 
-        target.addEventListener('hidden.bs.collapse', function () {
-            toggle.textContent = 'Mostrar más ▼';
+            target.addEventListener('hidden.bs.collapse', function () {
+                toggle.textContent = 'Mostrar más ▼';
+            });
         });
     });
-});
 </script>
 {% endblock %}
