@@ -1,0 +1,35 @@
+{# templates/products/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Productos{% endblock %}
+
+{% block body %}
+<h1>Lista de Productos</h1>
+
+<ul>
+    {% for product in products %}
+        <li>
+            <h2>{{ product.ItemInfo.Title.DisplayValue }}</h2>
+            <p>Marca: {{ product.ItemInfo.ByLineInfo.Brand.DisplayValue }}</p>
+            <p>Precio: 
+                {% if product.Offers.Listings is defined and product.Offers.Listings|length > 0 %}
+                    {{ product.Offers.Listings[0].Price.DisplayAmount }}
+                {% else %}
+                    No disponible
+                {% endif %}
+            </p>
+            <a href="{{ product.DetailPageURL }}" target="_blank">Ver en Amazon</a>
+            <div>
+                <img src="{{ product.Images.Primary.Large.URL }}" width="200" alt="{{ product.ItemInfo.Title.DisplayValue }}">
+            </div>
+            <ul>
+                {% for feature in product.ItemInfo.Features.DisplayValues %}
+                    <li>{{ feature }}</li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% else %}
+        <li>No hay productos disponibles</li>
+    {% endfor %}
+</ul>
+{% endblock %}

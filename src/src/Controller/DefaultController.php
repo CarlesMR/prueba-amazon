@@ -11,6 +11,22 @@ class DefaultController extends AbstractController
     #[Route('/', name: 'home')]
     public function index(): Response
     {
-        return new Response('Bienvenido, ' . $this->getUser()->getUserIdentifier());
+        $filePath = __DIR__ . '/../../data/amazon.json';
+
+        if (!file_exists($filePath)) {
+            throw $this->createNotFoundException('Archivo JSON no encontrado');
+        }
+
+        $jsonContent = file_get_contents($filePath);
+        $data = json_decode($jsonContent, true);
+
+        // Extraemos la lista de items
+        $items = $data['SearchResult']['Items'] ?? [];
+
+        return $this->render('index.html.twig', [
+            'products' => $items,
+        ]);
+
+        return $this->json($data);
     }
 }
