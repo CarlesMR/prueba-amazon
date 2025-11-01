@@ -17,60 +17,42 @@
         </thead>
         <tbody>
             {% for product in products %}
-                {% set rating = product.Rating ?? random(10) + 1 %}
-
-                {% if rating >= 9 %}
-                    {% set label = 'Genial' %}
-                    {% set color = 'success' %}
-                {% elseif rating >= 7 %}
-                    {% set label = 'Bueno' %}
-                    {% set color = 'primary' %}
-                {% elseif rating >= 5 %}
-                    {% set label = 'Regular' %}
-                    {% set color = 'warning' %}
-                {% else %}
-                    {% set label = 'Malo' %}
-                    {% set color = 'danger' %}
-                {% endif %}
-
+                {# ID único para collapse #}
                 {% set collapse_id = 'collapse-' ~ loop.index %}
 
                 <tr>
-                    {# --- Producto --- #}
                     <td class="text-center">
                         {% if product.Images.Primary.Large.URL is defined %}
-                            <img 
-                                src="{{ product.Images.Primary.Large.URL }}" 
-                                alt="{{ product.ItemInfo.Title.DisplayValue }}" 
-                                width="120" 
-                                class="img-thumbnail mb-2 shadow-sm rounded"
-                            >
+                            <img src="{{ product.Images.Primary.Large.URL }}" 
+                                 alt="{{ product.ItemInfo.Title.DisplayValue }}" 
+                                 width="120" class="img-thumbnail mb-2 shadow-sm rounded">
                         {% endif %}
                     </td>
 
                     {# --- Puntuación --- #}
                     <td class="text-center">
-                        <div class="fw-bold mb-1 fs-5">{{ rating }}/10</div>
-
-                        {% set stars = ((rating / 2)|round) %}
-                        {% set half_star = ((rating / 2) - stars) >= 0.5 %}
-                        {% set empty_stars = 5 - stars - (half_star ? 1 : 0) %}
+                        <div class="fw-bold mb-1 fs-5">
+                            {{ product.Reviews.Rating|number_format(1, '.', '') }}/5
+                        </div>
 
                         <div class="text-warning fs-5 mb-2">
-                            {% for i in 1..stars %}
+                            {% for i in 1..product.Reviews.Stars %}
                                 <i class="bi bi-star-fill"></i>
                             {% endfor %}
 
-                            {% if half_star %}
+                            {% if product.Reviews.HalfStar %}
                                 <i class="bi bi-star-half"></i>
                             {% endif %}
 
-                            {% for i in 1..empty_stars %}
-                                <i class="bi bi-star"></i>
-                            {% endfor %}
+                            {% if product.Reviews.EmptyStars > 0 %}
+                                {% for i in 1..product.Reviews.EmptyStars %}
+                                    <i class="bi bi-star"></i>
+                                {% endfor %}
+                            {% endif %}
                         </div>
-
-                        <span class="badge bg-{{ color }}">{{ label }}</span>
+                        <span class="badge bg-{{ product.Reviews.Color }}">
+                            {{ product.Reviews.Label }}
+                        </span>
                     </td>
 
                     {# --- Características --- #}
@@ -80,13 +62,11 @@
                                 ? product.ItemInfo.Title.DisplayValue|slice(0, 60) ~ '…' 
                                 : product.ItemInfo.Title.DisplayValue }}
                         </h6>
-
                         <div class="mb-2">
                             <small class="text-muted">
                                 {{ product.ItemInfo.ByLineInfo.Brand.DisplayValue ?? 'Marca desconocida' }}
                             </small>
                         </div>
-
                         <div class="mb-2">
                             {% if product.Offers.Listings[0].Price.Savings is defined %}
                                 <span class="badge badge-outline-dark me-1">
@@ -123,7 +103,6 @@
                     </td>
                 </tr>
 
-                {# --- Segundo TR con características completas --- #}
                 <tr class="collapse bg-light" id="{{ collapse_id }}">
                     <td colspan="4">
                         <strong>Más características:</strong>
@@ -145,7 +124,6 @@
     </table>
 </div>
 
-{# --- Script para cambiar el texto del toggle --- #}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const toggles = document.querySelectorAll('.toggle-collapse');
